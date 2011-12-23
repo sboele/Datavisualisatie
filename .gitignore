@@ -1,0 +1,19 @@
+# Ignore all dotfiles
+.*
+# except for .gitignore
+!.gitignore
+
+# Netbeans Files #
+nbproject
+
+# Eclipse Files #
+eclipse
+
+# global excludes #
+db
+log
+logs
+precompiled
+tmp
+test-result
+server.pid
