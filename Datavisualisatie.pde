@@ -34,6 +34,8 @@ void setup() {
   centre = new Vec2D(width/2, height/2);
   
   readHumansFile(humansFile);
+  AgeComparator agecomp = new AgeComparator(humans);
+  Collections.sort(humans,agecomp);
   readRelationshipFile(relationFile);
   fillHumansAmountOfRelation();
   
@@ -201,39 +203,6 @@ Human createHuman(String[] line) {
   human.hivInfector = int(line[26]);
 
   return human;
-}
-
-public LinkedHashMap sortHashMapByValuesD(HashMap passedMap) {
-    List mapKeys = new ArrayList(passedMap.keySet());
-    List mapValues = new ArrayList(passedMap.values());
-    Collections.sort(mapValues);
-    Collections.reverse(mapValues);
-    Collections.sort(mapKeys);
-    Collections.reverse(mapKeys);
-        
-    LinkedHashMap sortedMap = new LinkedHashMap();
-    
-    Iterator valueIt = mapValues.iterator();
-    while (valueIt.hasNext()) {
-        Object val = valueIt.next();
-        Iterator keyIt = mapKeys.iterator();
-        
-        while (keyIt.hasNext()) {
-            Object key = keyIt.next();
-            String comp1 = passedMap.get(key).toString();
-            String comp2 = val.toString();
-            
-            if (comp1.equals(comp2)){
-                passedMap.remove(key);
-                mapKeys.remove(key);
-                sortedMap.put((Integer)key, (Integer)val);
-                break;
-            }
-
-        }
-
-    }
-    return sortedMap;
 }
 
 void drawHumans() {
