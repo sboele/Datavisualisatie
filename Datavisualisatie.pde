@@ -30,19 +30,17 @@ float radius = 50.0;
  Read files and store in datastructures
  */
 void setup() {
-  size(1024,768);
+  size(1024,700);
   centre = new Vec2D(width/2, height/2);
   
   readHumansFile(humansFile);
   readRelationshipFile(relationFile);
   fillHumansAmountOfRelation();
   
-  calculateCoordinatesHumans(humansAmountOfRelationsMale);
+  drawHumans(humansAmountOfRelationsMale);
   radius = 25.0;
-  calculateCoordinatesHumans(humansAmountOfRelationsFemale);
-  
-  drawRelations();  
-  drawHumans();
+  drawHumans(humansAmountOfRelationsFemale);
+  drawRelations();
   /*System.out.println("Normal");
   Iterator it = humansAmountOfRelations.entrySet().iterator();  
   while(it.hasNext()) {
@@ -57,23 +55,30 @@ void setup() {
 void draw() {
 }
 
-void calculateCoordinatesHumans(HashMap humansAmountOfRelations) {
+void drawHumans(HashMap humansAmountOfRelations) {
   double perimeter = 2*Math.PI*radius;
   Set keySet = humansAmountOfRelations.keySet();
   List list = new ArrayList(keySet);
   Collections.sort(list);
   Collections.reverse(list);
-  for(int i = 0 ; i < humansAmountOfRelations.size() - 1; i++) {
+  for(int i = 0 ; i < humansAmountOfRelations.size() - 2; i++) {
     ArrayList humanIDs = (ArrayList)humansAmountOfRelations.get(list.get(i));
     double spaceBetweenNodes = perimeter / humanIDs.size();
     double angle = 0.0;
     ellipseMode(CENTER);
     fill(0,0);
     ellipse(centre.x, centre.y, radius*2, radius*2);
+//    fill(color(random(0,255),random(0,255),random(0,255)));
     Vec2D origin = new Vec2D(0-radius,0);
     for(int k = 0 ; k < humanIDs.size(); k++) {      
       int humanID = (Integer) humanIDs.get(k);
       Human human = (Human) humans.get(humanID);
+      if(human.gender == 'F') {
+        fill(color(255,153,204));
+      }
+      else {
+        fill(color(0,0,255));
+      }
       Vec2D coordinates;
 
       coordinates = pointOnCircle(radius, angle, origin);
@@ -82,8 +87,9 @@ void calculateCoordinatesHumans(HashMap humansAmountOfRelations) {
       
       ellipseMode(CENTER);
       angle += 360.0/humanIDs.size();
-      coordinates.x = centre.x + coordinates.x;
-      coordinates.y = centre.y + coordinates.y;
+      coordinates.x = random(1,width);
+      coordinates.y = random(1,height);
+      ellipse(coordinates.x, coordinates.y, 10, 10);
       
       human.coordinates = coordinates;
       human.hasBeenDrawn = true;
@@ -234,23 +240,6 @@ public LinkedHashMap sortHashMapByValuesD(HashMap passedMap) {
 
     }
     return sortedMap;
-}
-
-void drawHumans() {
-  Iterator it = humans.entrySet().iterator();  
-  while(it.hasNext()) {
-    Map.Entry pairs = (Map.Entry) it.next();
-    Human human = (Human) pairs.getValue();
-        
-    if(human.gender == 'F') {
-      fill(color(255,0,0));
-    }
-    else {
-      fill(color(0,0,255));
-    }
-    
-    ellipse(human.coordinates.x, human.coordinates.y, 10, 10);
-  }
 }
 
 void drawRelations() {
