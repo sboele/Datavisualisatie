@@ -243,7 +243,7 @@ void drawHumans() {
     Human human = (Human) pairs.getValue();
         
     if(human.gender == 'F') {
-      fill(color(255,153,204));
+      fill(color(255,0,0));
     }
     else {
       fill(color(0,0,255));
