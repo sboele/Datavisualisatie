@@ -6,6 +6,8 @@ public class AgeComparator implements Comparator {
   }
 
   public int compare(Object a, Object b) {
-    return (Human)base.get(a).birth - (Human)base.get(b).birth;
+    Human one = (Human) a;
+    Human two = (Human) b;
+    return int(one.birth) - int(two.birth);
   }
 }

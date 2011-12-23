@@ -34,8 +34,8 @@ void setup() {
   centre = new Vec2D(width/2, height/2);
   
   readHumansFile(humansFile);
-  AgeComparator agecomp = new AgeComparator(humans);
-  Collections.sort(humans,agecomp);
+  humans = sortHashMapByValuesD(humans);
+//  Collections.sort(humans,agecomp);
   readRelationshipFile(relationFile);
   fillHumansAmountOfRelation();
   
@@ -65,7 +65,7 @@ void calculateCoordinatesHumans(HashMap humansAmountOfRelations) {
   List list = new ArrayList(keySet);
   Collections.sort(list);
   Collections.reverse(list);
-  for(int i = 0 ; i < humansAmountOfRelations.size() - 1; i++) {
+  for(int i = 0 ; i < humansAmountOfRelations.size() ; i++) {
     ArrayList humanIDs = (ArrayList)humansAmountOfRelations.get(list.get(i));
     double spaceBetweenNodes = perimeter / humanIDs.size();
     double angle = 0.0;
@@ -80,7 +80,7 @@ void calculateCoordinatesHumans(HashMap humansAmountOfRelations) {
 
       coordinates = pointOnCircle(radius, angle, origin);
       origin = coordinates;
-      System.out.println("First: Size: "+humanIDs.size()+" Coordinates: "+coordinates+" Radius: "+radius+" Angle: "+angle+" - M/F: "+human.gender);
+      System.out.println("First: Size: "+humanIDs.size()+" Coordinates: "+coordinates+" Radius: "+radius+" Angle: "+angle+" - M/F: "+human.gender + " - Age: "+human.birth);
       
       ellipseMode(CENTER);
       angle += 360.0/humanIDs.size();
@@ -218,7 +218,7 @@ void drawHumans() {
       fill(color(0,0,255));
     }
     
-    ellipse(human.coordinates.x, human.coordinates.y, 10, 10);
+    ellipse(human.coordinates.x, human.coordinates.y, 5, 5);
   }
 }
 
@@ -232,4 +232,38 @@ void drawRelations() {
     }
     //Line2D line = new Line2D(relation.male.coordinates, relation.female.coordinates);
   }
+}
+
+public LinkedHashMap sortHashMapByValuesD(HashMap passedMap) {
+    AgeComparator agecomp = new AgeComparator(humans);
+    List mapKeys = new ArrayList(passedMap.keySet());
+    List mapValues = new ArrayList(passedMap.values());
+    Collections.sort(mapValues,agecomp);
+//    Collections.reverse(mapValues);
+    Collections.sort(mapKeys);
+//    Collections.reverse(mapKeys);
+        
+    LinkedHashMap sortedMap = new LinkedHashMap();
+    
+    Iterator valueIt = mapValues.iterator();
+    while (valueIt.hasNext()) {
+        Object val = valueIt.next();
+        Iterator keyIt = mapKeys.iterator();
+        
+        while (keyIt.hasNext()) {
+            Object key = keyIt.next();
+            String comp1 = passedMap.get(key).toString();
+            String comp2 = val.toString();
+            
+            if (comp1.equals(comp2)){
+                passedMap.remove(key);
+                mapKeys.remove(key);
+                sortedMap.put((Integer)key, (Human)val);
+                break;
+            }
+
+        }
+
+    }
+    return sortedMap;
 }
