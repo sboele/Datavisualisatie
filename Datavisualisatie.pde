@@ -17,7 +17,7 @@ HashMap humansAmountOfRelationsMale = new HashMap();
 HashMap humansAmountOfRelationsFemale = new HashMap();
 Map sorted_map = new LinkedHashMap();
 
-HashMap humans = new HashMap();
+HashMap humans = new LinkedHashMap();
 HashMap relations = new HashMap();
 String humansFile = "ks05N158H.001";
 String relationFile = "ks05N158Z.001";
