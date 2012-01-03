@@ -38,7 +38,6 @@ void setup() {
   
   readHumansFile(humansFile);
   humans = sortHashMapByValuesD(humans);
-//  Collections.sort(humans,agecomp);
   readRelationshipFile(relationFile);
   readTransmissionEventsFile(transmissionEventFile);
   fillHumansAmountOfRelation();
@@ -46,28 +45,16 @@ void setup() {
   calculateCoordinatesHumans(humansAmountOfRelationsMale);
   radius = 25.0;
   calculateCoordinatesHumans(humansAmountOfRelationsFemale);
-  
-  //drawRelations();  
-  //drawHumans();
-  /*System.out.println("Normal");
-  Iterator it = humansAmountOfRelations.entrySet().iterator();  
-  while(it.hasNext()) {
-    Map.Entry pairs = (Map.Entry) it.next();
-    ArrayList a = (ArrayList) pairs.getValue();
-    System.out.println(a.toString()); 
-  }
-  */
-  //sorted_map = sortHashMapByValuesD(humansAmountOfRelations);
 }
 
 int lastTime = 0;
 float date = 1995.000;
 
 void draw(){
-  if( millis() - lastTime >= 50){
+  if( millis() - lastTime >= 100){
     background(255);
     fill(0);
-    text(date,10,15);
+    text(date, 10, 15);
     drawRelations(date);  
     boolean noOneLeft = drawHumans(date);
     if(noOneLeft) {
