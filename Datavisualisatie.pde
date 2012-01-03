@@ -25,6 +25,8 @@ String relationFile = "ks05N158Z.001";
 Vec2D centre;
 float radius = 50.0;
 
+boolean pause = false;
+
 /*
  Setup function
  Read files and store in datastructures
@@ -58,14 +60,34 @@ void setup() {
 
 int lastTime = 0;
 float date = 2001.010;
+int speed = 1;
 
 void draw(){
   if( millis() - lastTime >= 50){
     background(255);
+    fill(0);
+    text(date,10,15);
     drawRelations(date);  
-    drawHumans();
-    date_F += 0.010;
+    boolean noOneLeft = drawHumans(date);
+    if(noOneLeft) {
+      noLoop();
+    }
+    if(int(date) % 5 == 0) {
+      speed++;
+    }
+    date += 0.01 * speed;
     lastTime = millis();
+  }
+}
+
+void mousePressed() {
+  if(pause) {
+    pause = false;
+    loop();
+  }
+  else {
+    pause = true;
+    noLoop();
   }
 }
 
@@ -215,21 +237,26 @@ Human createHuman(String[] line) {
   return human;
 }
 
-void drawHumans() {
+boolean drawHumans(float date) {
+  boolean noOneLeft = true;
   Iterator it = humans.entrySet().iterator();  
   while(it.hasNext()) {
     Map.Entry pairs = (Map.Entry) it.next();
     Human human = (Human) pairs.getValue();
-        
-    if(human.gender == 'F') {
-      fill(color(255,0,0));
-    }
-    else {
-      fill(color(0,0,255));
-    }
     
-    ellipse(human.coordinates.x, human.coordinates.y, 5, 5);
+    if(human.death > date) {
+      noOneLeft = false;
+      if(human.gender == 'F') {
+        fill(color(255,0,0));
+      }
+      else {
+        fill(color(0,0,255));
+      }
+      
+      ellipse(human.coordinates.x, human.coordinates.y, 5, 5);
+    }
   }
+  return noOneLeft;
 }
 
 void drawRelations(float date) {
