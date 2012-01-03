@@ -34,7 +34,6 @@ public class Human {
   int hivInfector; // ID of HIV infector
   ArrayList relations;
   Vec2D coordinates;
-  String position;
   boolean hasBeenDrawn = false;
 
   Human() {
