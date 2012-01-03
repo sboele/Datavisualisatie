@@ -56,7 +56,13 @@ void setup() {
   //sorted_map = sortHashMapByValuesD(humansAmountOfRelations);
 }
 
-void draw() {
+int lastTime = 0;
+
+void draw(){
+  if( millis() - lastTime >= 1000){
+    System.out.println("aaaa");
+    lastTime = millis();
+  }
 }
 
 void calculateCoordinatesHumans(HashMap humansAmountOfRelations) {
