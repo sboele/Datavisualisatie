@@ -43,8 +43,8 @@ void setup() {
   radius = 25.0;
   calculateCoordinatesHumans(humansAmountOfRelationsFemale);
   
-  drawRelations();  
-  drawHumans();
+  //drawRelations();  
+  //drawHumans();
   /*System.out.println("Normal");
   Iterator it = humansAmountOfRelations.entrySet().iterator();  
   while(it.hasNext()) {
@@ -57,10 +57,14 @@ void setup() {
 }
 
 int lastTime = 0;
+float date = 2001.010;
 
 void draw(){
-  if( millis() - lastTime >= 1000){
-    System.out.println("aaaa");
+  if( millis() - lastTime >= 50){
+    background(255);
+    drawRelations(date);  
+    drawHumans();
+    date_F += 0.010;
     lastTime = millis();
   }
 }
@@ -228,12 +232,12 @@ void drawHumans() {
   }
 }
 
-void drawRelations() {
+void drawRelations(float date) {
   Iterator it = relations.entrySet().iterator();  
   while(it.hasNext()) {
     Map.Entry pairs = (Map.Entry) it.next();
     Relation relation = (Relation) pairs.getValue();
-    if(relation.male.hasBeenDrawn & relation.female.hasBeenDrawn) {
+    if(relation.male.hasBeenDrawn & relation.female.hasBeenDrawn & relation.date_start <= date & relation.date_stop >= date) {
       line(relation.male.coordinates.x, relation.male.coordinates.y, relation.female.coordinates.x, relation.female.coordinates.y);
     }
     //Line2D line = new Line2D(relation.male.coordinates, relation.female.coordinates);
