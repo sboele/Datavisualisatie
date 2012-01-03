@@ -65,7 +65,7 @@ void calculateCoordinatesHumans(HashMap humansAmountOfRelations) {
   List list = new ArrayList(keySet);
   Collections.sort(list);
   Collections.reverse(list);
-  for(int i = 0 ; i < humansAmountOfRelations.size() ; i++) {
+  for(int i = 0 ; i < humansAmountOfRelations.size() - 2 ; i++) {
     ArrayList humanIDs = (ArrayList)humansAmountOfRelations.get(list.get(i));
     double spaceBetweenNodes = perimeter / humanIDs.size();
     double angle = 0.0;
@@ -73,14 +73,24 @@ void calculateCoordinatesHumans(HashMap humansAmountOfRelations) {
     fill(0,0);
     ellipse(centre.x, centre.y, radius*2, radius*2);
     Vec2D origin = new Vec2D(0-radius,0);
-    for(int k = 0 ; k < humanIDs.size(); k++) {      
+    for(int k = 0 ; k < humanIDs.size() ; k++) {      
       int humanID = (Integer) humanIDs.get(k);
       Human human = (Human) humans.get(humanID);
       Vec2D coordinates;
 
       coordinates = pointOnCircle(radius, angle, origin);
       origin = coordinates;
-      System.out.println("First: Size: "+humanIDs.size()+" Coordinates: "+coordinates+" Radius: "+radius+" Angle: "+angle+" - M/F: "+human.gender + " - Age: "+human.birth);
+      
+      if(coordinates.x >= 0 & coordinates.y >= 0)
+        human.position = "NORTH-EAST";
+      else if(coordinates.x > 0 & coordinates.y < 0)
+        human.position = "SOUTH-EAST";
+      else if(coordinates.x <= 0 & coordinates.y <= 0)
+        human.position = "SOUTH-WEST";
+      else
+        human.position = "NORTH-WEST";
+
+System.out.println("First: Size: "+humanIDs.size()+" Coordinates: "+coordinates+" Radius: "+radius+" Angle: "+angle+" - M/F: "+human.gender + " - Age: "+human.birth + " Position:" + human.position);
       
       ellipseMode(CENTER);
       angle += 360.0/humanIDs.size();
@@ -90,6 +100,7 @@ void calculateCoordinatesHumans(HashMap humansAmountOfRelations) {
       human.coordinates = coordinates;
       human.hasBeenDrawn = true;
       humans.put(humanID, human);
+      
     }
     radius += 50;
   }
@@ -228,7 +239,36 @@ void drawRelations() {
     Map.Entry pairs = (Map.Entry) it.next();
     Relation relation = (Relation) pairs.getValue();
     if(relation.male.hasBeenDrawn & relation.female.hasBeenDrawn) {
-      line(relation.male.coordinates.x, relation.male.coordinates.y, relation.female.coordinates.x, relation.female.coordinates.y);
+      if(relation.male.relations.size() != 0 & relation.female.relations.size() != 0) {
+        beginShape();
+        vertex(relation.male.coordinates.x, relation.male.coordinates.y);
+        
+        if(relation.male.position == "NORTH-WEST" & relation.female.position == "NORTH-WEST")
+          bezierVertex(relation.male.coordinates.x, relation.male.coordinates.y, 0, 0, relation.female.coordinates.x, relation.female.coordinates.y);
+        if(relation.male.position == "NORTH-EAST" & relation.female.position == "NORTH-EAST")
+          bezierVertex(relation.male.coordinates.x, relation.male.coordinates.y, width, 0, relation.female.coordinates.x, relation.female.coordinates.y);
+        if(relation.male.position == "SOUTH-WEST" & relation.female.position == "SOUTH-WEST")
+          bezierVertex(relation.male.coordinates.x, relation.male.coordinates.y, 0, height, relation.female.coordinates.x, relation.female.coordinates.y);
+        if(relation.male.position == "SOUTH-EAST" & relation.female.position == "SOUTH-EAST")
+          bezierVertex(relation.male.coordinates.x, relation.male.coordinates.y, width, height, relation.female.coordinates.x, relation.female.coordinates.y);
+          
+        if((relation.male.position == "NORTH-WEST" | relation.female.position == "NORTH-WEST") & (relation.female.position == "NORTH-EAST" | relation.female.position == "NORTH-EAST"))
+          bezierVertex(relation.male.coordinates.x, relation.male.coordinates.y, centre.x, 0, relation.female.coordinates.x, relation.female.coordinates.y);
+        if((relation.male.position == "NORTH-WEST" | relation.female.position == "NORTH-WEST") & (relation.female.position == "SOUTH-EAST" | relation.female.position == "SOUTH-EAST"))
+          bezierVertex(relation.male.coordinates.x, relation.male.coordinates.y, width, 0, relation.female.coordinates.x, relation.female.coordinates.y);
+        if((relation.male.position == "NORTH-WEST" | relation.female.position == "NORTH-WEST") & (relation.female.position == "SOUTH-WEST" | relation.female.position == "SOUTH-WEST"))
+          bezierVertex(relation.male.coordinates.x, relation.male.coordinates.y, 0, centre.y, relation.female.coordinates.x, relation.female.coordinates.y);
+        if((relation.male.position == "NORTH-EAST" | relation.female.position == "NORTH-EAST") & (relation.female.position == "SOUTH-EAST" | relation.female.position == "SOUTH-EAST"))
+          bezierVertex(relation.male.coordinates.x, relation.male.coordinates.y, width, centre.y, relation.female.coordinates.x, relation.female.coordinates.y);
+        if((relation.male.position == "NORTH-EAST" | relation.female.position == "NORTH-EAST") & (relation.female.position == "SOUTH-WEST" | relation.female.position == "SOUTH-WEST"))
+          bezierVertex(relation.male.coordinates.x, relation.male.coordinates.y, 0, 0, relation.female.coordinates.x, relation.female.coordinates.y);
+        if((relation.male.position == "SOUTH-EAST" | relation.female.position == "SOUTH-EAST") & (relation.female.position == "SOUTH-WEST" | relation.female.position == "SOUTH-WEST"))
+          bezierVertex(relation.male.coordinates.x, relation.male.coordinates.y, centre.x, height, relation.female.coordinates.x, relation.female.coordinates.y);
+          
+        endShape();
+      } else {
+        line(relation.male.coordinates.x, relation.male.coordinates.y, relation.female.coordinates.x, relation.female.coordinates.y);
+      }
     }
     //Line2D line = new Line2D(relation.male.coordinates, relation.female.coordinates);
   }
