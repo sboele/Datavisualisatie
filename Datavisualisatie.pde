@@ -19,8 +19,9 @@ Map sorted_map = new LinkedHashMap();
 
 HashMap humans = new LinkedHashMap();
 HashMap relations = new HashMap();
-String humansFile = "ks05N158H.001";
-String relationFile = "ks05N158Z.001";
+String humansFile = "ks05N158H.000";
+String relationFile = "ks05N158Z.000";
+String transmissionEventFile = "ks05N158X.000";
 
 Vec2D centre;
 float radius = 50.0;
@@ -39,6 +40,7 @@ void setup() {
   humans = sortHashMapByValuesD(humans);
 //  Collections.sort(humans,agecomp);
   readRelationshipFile(relationFile);
+  readTransmissionEventsFile(transmissionEventFile);
   fillHumansAmountOfRelation();
   
   calculateCoordinatesHumans(humansAmountOfRelationsMale);
@@ -59,8 +61,7 @@ void setup() {
 }
 
 int lastTime = 0;
-float date = 2001.010;
-int speed = 1;
+float date = 1995.000;
 
 void draw(){
   if( millis() - lastTime >= 50){
@@ -72,10 +73,7 @@ void draw(){
     if(noOneLeft) {
       noLoop();
     }
-    if(int(date) % 5 == 0) {
-      speed++;
-    }
-    date += 0.01 * speed;
+    date += 0.005;
     lastTime = millis();
   }
 }
@@ -112,7 +110,7 @@ void calculateCoordinatesHumans(HashMap humansAmountOfRelations) {
 
       coordinates = pointOnCircle(radius, angle, origin);
       origin = coordinates;
-      System.out.println("First: Size: "+humanIDs.size()+" Coordinates: "+coordinates+" Radius: "+radius+" Angle: "+angle+" - M/F: "+human.gender + " - Age: "+human.birth);
+      //System.out.println("First: Size: "+humanIDs.size()+" Coordinates: "+coordinates+" Radius: "+radius+" Angle: "+angle+" - M/F: "+human.gender + " - Age: "+human.birth + " hivDate: "+human.hivDate);
       
       ellipseMode(CENTER);
       angle += 360.0/humanIDs.size();
@@ -183,11 +181,33 @@ void readRelationshipFile(String file) {
     String[] line = split(lines[i], "\t");
     if (line.length == 11) {
       Relation relation = createRelation(line);
+      if(relation != null) {
       relations.put(relation.id, relation);
+      }
      // println("Added relation:"+relation.id+" to hashmap");
     }
   }
 }
+
+void readTransmissionEventsFile(String file) {
+  String[] lines = loadStrings(file);
+  int counter = 0;
+  for(int i=1 ; i < lines.length ; i++) {
+    String[] line = split(lines[i], "\t");
+    if (line.length == 12) {
+      Human human = (Human) humans.get(int(line[8]));
+      if(human != null) {
+        human.hivDate = float(line[3]);
+        human.infector = (Human) humans.get(int(line[9]));
+        humans.put(human.id, human);
+        counter++;
+        System.out.println(human.hivDate);
+      }
+      System.out.println(counter);
+    }
+  }
+}
+
 
 Relation createRelation(String[] line) {
   Relation relation = new Relation();
@@ -195,6 +215,11 @@ Relation createRelation(String[] line) {
   relation.type = line[4];
   relation.male = (Human) humans.get(int(line[5]));
   relation.female = (Human) humans.get(int(line[6]));
+  
+  if(relation.male == null || relation.female == null) {
+    return null;
+  }
+  
   relation.date_start = float(line[7]);
   relation.date_stop = float(line[8]);
   relation.condom = float(line[9]);
@@ -244,16 +269,19 @@ boolean drawHumans(float date) {
     Map.Entry pairs = (Map.Entry) it.next();
     Human human = (Human) pairs.getValue();
     
-    if(human.death > date) {
+    if(human.death > date && human.birth < date) {
       noOneLeft = false;
+      if(human.hivDate < date) {
+        fill(color(30,157,68));
+        ellipse(human.coordinates.x, human.coordinates.y, 5, 5);
+      }
       if(human.gender == 'F') {
         fill(color(255,0,0));
       }
       else {
         fill(color(0,0,255));
       }
-      
-      ellipse(human.coordinates.x, human.coordinates.y, 5, 5);
+      ellipse(human.coordinates.x, human.coordinates.y, 4, 4);
     }
   }
   return noOneLeft;
@@ -265,6 +293,13 @@ void drawRelations(float date) {
     Map.Entry pairs = (Map.Entry) it.next();
     Relation relation = (Relation) pairs.getValue();
     if(relation.male.hasBeenDrawn & relation.female.hasBeenDrawn & relation.date_start <= date & relation.date_stop >= date) {
+      if((relation.male.hivDate < date && relation.female.hivDate < date)) {
+        stroke(color(63,227,15));
+        //System.out.println("DUS: " + relation.male.hivDate + " DAT: " + relation.female.hivDate + " DATE: " + date);
+      }
+      else {
+        stroke(color(0,0,0));
+      }
       line(relation.male.coordinates.x, relation.male.coordinates.y, relation.female.coordinates.x, relation.female.coordinates.y);
     }
     //Line2D line = new Line2D(relation.male.coordinates, relation.female.coordinates);
