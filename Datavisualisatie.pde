@@ -57,12 +57,12 @@ void setup() {
 }
 
 int lastTime = 0;
-float date = 2001.010;
+float date_F = 2001.010;
 
 void draw(){
-  if( millis() - lastTime >= 50){
+  if( millis() - lastTime >= 100){
     background(255);
-    drawRelations(date);  
+    drawRelations(date_F);  
     drawHumans();
     date_F += 0.010;
     lastTime = millis();
