@@ -48,7 +48,7 @@ void setup() {
 }
 
 int lastTime = 0;
-float date = 1995.000;
+float date = 1970.000;
 
 void draw(){
   if( millis() - lastTime >= 100){
@@ -60,7 +60,7 @@ void draw(){
     if(noOneLeft) {
       noLoop();
     }
-    date += 0.005;
+    date += 1.005;
     lastTime = millis();
   }
 }
