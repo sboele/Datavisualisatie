@@ -28,6 +28,9 @@ float radius = 50.0;
 
 boolean pause = false;
 
+float[] birthRegions = new float[5];
+
+
 /*
  Setup function
  Read files and store in datastructures
@@ -60,7 +63,6 @@ void draw(){
     if(noOneLeft) {
       noLoop();
     }
-
     date += 0.100;
     lastTime = millis();
   }
@@ -85,6 +87,60 @@ void calculateCoordinatesHumans(HashMap humansAmountOfRelations) {
   Collections.reverse(list);
   for(int i = 0 ; i < humansAmountOfRelations.size() ; i++) {
     ArrayList humanIDs = (ArrayList)humansAmountOfRelations.get(list.get(i));
+    ArrayList<HashMap> regions = new ArrayList<HashMap>();
+    HashMap h = new HashMap();
+    int teller = 0;
+    for(int l = 0 ; l < humanIDs.size(); l++) {
+      int humanID = (Integer) humanIDs.get(l);
+      Human human = (Human) humans.get(humanID);
+      System.out.println("Birth: " + human.birth + " Required date: "+ birthRegions[teller]);
+      if(human.birth < birthRegions[teller])
+      {
+        System.out.println("HEu ik heb em toegevoegd " + l + " " + humanIDs.size());
+        
+        h.put(human.id, human);
+        if(l+1 < humanIDs.size()) {
+          int humanIDtemp = (Integer) humanIDs.get(l+1);
+          Human humantemp = (Human) humans.get(humanIDtemp);
+          if(humantemp.birth > birthRegions[teller]) {
+              regions.add(h);
+              System.out.println("Toegevoegd! In if!");
+          }
+        }
+      }
+      else {
+        regions.add(h);
+        while(teller < 4) {
+          System.out.println("Else Birth: " + human.birth + " Required date: "+ birthRegions[teller]);
+          System.out.println("Toegevoegd! Begin While!");
+
+          teller++;
+          h = new HashMap();
+          if(human.birth < birthRegions[teller])
+          {
+            h.put(human.id, human);
+            System.out.println("Toegevoegd! Break!");
+            System.out.println(h);
+            regions.add(h);
+            break;
+          }
+            System.out.println("Toegevoegd! While loop!");
+           regions.add(h);
+        }
+      }
+                  System.out.println("L: " + (l+1) + " HumanIDs.size: " + humanIDs.size());
+      
+                  if(l+1 == humanIDs.size()) {
+              for(int m = 0 ; m < 4-teller ; m++) {
+                h = new HashMap();
+                regions.add(h);
+              }
+            }
+    }
+    System.out.println(regions.size());
+    for(int z = 0 ; z < regions.size() ; z++) {
+      
+    }
     double spaceBetweenNodes = perimeter / humanIDs.size();
     double angle = 0.0;
     ellipseMode(CENTER);
@@ -152,15 +208,29 @@ void fillHumansAmountOfRelationHashMaps(HashMap humansAmountOfRelations, Human h
 }
 
 void readHumansFile(String file) {
+  float firstBirth = 100000.0;
+  float lastBirth = 0.0;
   String[] lines = loadStrings(file);
   for (int i=1 ; i < lines.length ; i++) {
     String[] line = split(lines[i], "\t");
     if (line.length == 33) {
       Human human = createHuman(line);
       humans.put(human.id, human);
+      
+      if(human.birth < firstBirth)
+        firstBirth = human.birth;
+      
+      if(human.birth > lastBirth)
+        lastBirth = human.birth;
+        
      // println("Added human:"+human.id+" to hashmap");
     }
   }
+  birthRegions[0] = firstBirth;
+  birthRegions[1] = firstBirth + ((lastBirth - firstBirth) / 4);
+  birthRegions[2] = firstBirth + (((lastBirth - firstBirth) / 4) * 2);
+  birthRegions[3] = firstBirth + (((lastBirth - firstBirth) / 4) * 3);
+  birthRegions[4] = lastBirth;
 }
 
 void readRelationshipFile(String file) {
@@ -189,9 +259,9 @@ void readTransmissionEventsFile(String file) {
         human.infector = (Human) humans.get(int(line[9]));
         humans.put(human.id, human);
         counter++;
-        System.out.println(human.hivDate);
+//        System.out.println(human.hivDate);
       }
-      System.out.println(counter);
+//      System.out.println(counter);
     }
   }
 }
