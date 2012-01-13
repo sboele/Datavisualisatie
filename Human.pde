@@ -35,6 +35,7 @@ public class Human {
   ArrayList relations;
   Vec2D coordinates;
   boolean hasBeenDrawn = false;
+  int region;
   
   float hivDate = 111111110.0;
   Human infector;

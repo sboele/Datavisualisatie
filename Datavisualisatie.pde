@@ -57,6 +57,7 @@ void draw(){
   if( millis() - lastTime >= 100){
     background(255);
     fill(0);
+    drawRegions();
     text(date, 10, 15);
     drawRelations(date);  
     boolean noOneLeft = drawHumans(date);
@@ -79,6 +80,23 @@ void mousePressed() {
   }
 }
 
+void drawRegions() {
+  fill(189,255,231);
+  rect(0,0, width/2, height/2);
+  fill(248,255,201);
+  rect(width/2,0, width/2, height/2);
+  fill(255,239,237);
+  rect(0,height/2, width/2, height/2);
+  fill(236,199,255);
+  rect(width/2,height/2, width/2, height/2);
+  
+  fill(0, 102, 153);
+  text(birthRegions[0]+" - "+birthRegions[1], width-200, height-100);
+  text(birthRegions[1]+" - "+birthRegions[2], 100, height-100);
+  text(birthRegions[2]+" - "+birthRegions[3], 100, 100);
+  text(birthRegions[3]+" - "+birthRegions[4], width-200, 100);
+}
+
 void calculateCoordinatesHumans(HashMap humansAmountOfRelations) {
   double perimeter = 2*Math.PI*radius;
   Set keySet = humansAmountOfRelations.keySet();
@@ -87,69 +105,31 @@ void calculateCoordinatesHumans(HashMap humansAmountOfRelations) {
   Collections.reverse(list);
   for(int i = 0 ; i < humansAmountOfRelations.size() ; i++) {
     ArrayList humanIDs = (ArrayList)humansAmountOfRelations.get(list.get(i));
-    ArrayList<HashMap> regions = new ArrayList<HashMap>();
-    HashMap h = new HashMap();
-    int teller = 0;
-    for(int l = 0 ; l < humanIDs.size(); l++) {
-      int humanID = (Integer) humanIDs.get(l);
-      Human human = (Human) humans.get(humanID);
-      System.out.println("Birth: " + human.birth + " Required date: "+ birthRegions[teller]);
-      if(human.birth < birthRegions[teller])
-      {
-        System.out.println("HEu ik heb em toegevoegd " + l + " " + humanIDs.size());
-        
-        h.put(human.id, human);
-        if(l+1 < humanIDs.size()) {
-          int humanIDtemp = (Integer) humanIDs.get(l+1);
-          Human humantemp = (Human) humans.get(humanIDtemp);
-          if(humantemp.birth > birthRegions[teller]) {
-              regions.add(h);
-              System.out.println("Toegevoegd! In if!");
-          }
-        }
-      }
-      else {
-        regions.add(h);
-        while(teller < 4) {
-          System.out.println("Else Birth: " + human.birth + " Required date: "+ birthRegions[teller]);
-          System.out.println("Toegevoegd! Begin While!");
 
-          teller++;
-          h = new HashMap();
-          if(human.birth < birthRegions[teller])
-          {
-            h.put(human.id, human);
-            System.out.println("Toegevoegd! Break!");
-            System.out.println(h);
-            regions.add(h);
-            break;
-          }
-            System.out.println("Toegevoegd! While loop!");
-           regions.add(h);
-        }
-      }
-                  System.out.println("L: " + (l+1) + " HumanIDs.size: " + humanIDs.size());
-      
-                  if(l+1 == humanIDs.size()) {
-              for(int m = 0 ; m < 4-teller ; m++) {
-                h = new HashMap();
-                regions.add(h);
-              }
-            }
+    ArrayList regions = new ArrayList();
+    regions.add(new ArrayList());
+    regions.add(new ArrayList());
+    regions.add(new ArrayList());
+    regions.add(new ArrayList());
+    
+    for(int m = 0 ; m < humanIDs.size(); m++) {
+      int humanID = (Integer) humanIDs.get(m);
+      Human human = (Human) humans.get(humanID);
+      ArrayList group = (ArrayList) regions.get(human.region);
+      group.add(human);
+      regions.set(human.region, group);
     }
-    System.out.println(regions.size());
-    for(int z = 0 ; z < regions.size() ; z++) {
-      
-    }
+    
     double spaceBetweenNodes = perimeter / humanIDs.size();
     double angle = 0.0;
     ellipseMode(CENTER);
     fill(0,0);
     ellipse(centre.x, centre.y, radius*2, radius*2);
     Vec2D origin = new Vec2D(0-radius,0);
-    for(int k = 0 ; k < humanIDs.size(); k++) {      
-      int humanID = (Integer) humanIDs.get(k);
-      Human human = (Human) humans.get(humanID);
+    for(int k = 0 ; k < regions.size(); k++) {
+      ArrayList group = (ArrayList) regions.get(k);
+      for(int n = 0 ; n < group.size() ; n++) {
+        Human human = (Human) group.get(n);
       Vec2D coordinates;
 
       coordinates = pointOnCircle(radius, angle, origin);
@@ -157,16 +137,17 @@ void calculateCoordinatesHumans(HashMap humansAmountOfRelations) {
       //System.out.println("First: Size: "+humanIDs.size()+" Coordinates: "+coordinates+" Radius: "+radius+" Angle: "+angle+" - M/F: "+human.gender + " - Age: "+human.birth + " hivDate: "+human.hivDate);
       
       ellipseMode(CENTER);
-      angle += 360.0/humanIDs.size();
+      angle += 90.0/group.size();
       coordinates.x = centre.x + coordinates.x;
       coordinates.y = centre.y + coordinates.y;
       
       human.coordinates = coordinates;
       human.hasBeenDrawn = true;
-      humans.put(humanID, human);
+      humans.put(human.id, human);
     }
-    radius += 50;
   }
+      radius += 50;
+        }
 }
 
 public Vec2D pointOnCircle(float radius, double angle, Vec2D origin) {
@@ -231,6 +212,23 @@ void readHumansFile(String file) {
   birthRegions[2] = firstBirth + (((lastBirth - firstBirth) / 4) * 2);
   birthRegions[3] = firstBirth + (((lastBirth - firstBirth) / 4) * 3);
   birthRegions[4] = lastBirth;
+  
+  Set keySet = humans.keySet();
+  List list = new ArrayList(keySet);
+  
+  for(int i = 0 ; i < list.size() ;i++) {
+    int humanId = (Integer) list.get(i);
+    Human human = (Human) humans.get(humanId);
+    int region;
+    if(human.birth < birthRegions[1])
+      human.region = 0;
+    else if(human.birth < birthRegions[2])
+      human.region = 1;
+    else if(human.birth < birthRegions[3])
+      human.region = 2;
+    else if(human.birth < birthRegions[4])
+      human.region = 3;
+  }
 }
 
 void readRelationshipFile(String file) {
@@ -359,7 +357,7 @@ void drawRelations(float date) {
         stroke(color(0,0,0));
       }
       line(relation.male.coordinates.x, relation.male.coordinates.y, relation.female.coordinates.x, relation.female.coordinates.y);
-    }
+      }
     //Line2D line = new Line2D(relation.male.coordinates, relation.female.coordinates);
   }
 }
