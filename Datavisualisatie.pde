@@ -60,7 +60,8 @@ void draw(){
     if(noOneLeft) {
       noLoop();
     }
-    date += 1.005;
+
+    date += 0.100;
     lastTime = millis();
   }
 }
@@ -260,7 +261,7 @@ boolean drawHumans(float date) {
       noOneLeft = false;
       if(human.hivDate < date) {
         fill(color(30,157,68));
-        ellipse(human.coordinates.x, human.coordinates.y, 5, 5);
+        ellipse(human.coordinates.x, human.coordinates.y, 8, 8);
       }
       if(human.gender == 'F') {
         fill(color(255,0,0));
@@ -268,7 +269,7 @@ boolean drawHumans(float date) {
       else {
         fill(color(0,0,255));
       }
-      ellipse(human.coordinates.x, human.coordinates.y, 4, 4);
+      ellipse(human.coordinates.x, human.coordinates.y, 2, 2);
     }
   }
   return noOneLeft;

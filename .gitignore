@@ -17,3 +17,8 @@ precompiled
 tmp
 test-result
 server.pid
+
+# exported applications
+application.windows/
+application.linux/
+application.macosx/
