@@ -35,8 +35,9 @@ public class Human {
   ArrayList relations;
   Vec2D coordinates;
   boolean hasBeenDrawn = false;
+  int region;
   
-  float hivDate = 111111110.0;
+  float hivDate = 111111110.0; //initialyze hivdate at very high number, because check in time is easier to do (human.hivDate < dateNow )
   Human infector;
 
   Human() {
