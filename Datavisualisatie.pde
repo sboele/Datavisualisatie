@@ -86,61 +86,6 @@ void calculateCoordinatesHumans(HashMap humansAmountOfRelations) {
   Collections.sort(list);
   Collections.reverse(list);
   for(int i = 0 ; i < humansAmountOfRelations.size() ; i++) {
-    ArrayList humanIDs = (ArrayList)humansAmountOfRelations.get(list.get(i));
-    ArrayList<HashMap> regions = new ArrayList<HashMap>();
-    HashMap h = new HashMap();
-    int teller = 0;
-    for(int l = 0 ; l < humanIDs.size(); l++) {
-      int humanID = (Integer) humanIDs.get(l);
-      Human human = (Human) humans.get(humanID);
-      System.out.println("Birth: " + human.birth + " Required date: "+ birthRegions[teller]);
-      if(human.birth < birthRegions[teller])
-      {
-        System.out.println("HEu ik heb em toegevoegd " + l + " " + humanIDs.size());
-        
-        h.put(human.id, human);
-        if(l+1 < humanIDs.size()) {
-          int humanIDtemp = (Integer) humanIDs.get(l+1);
-          Human humantemp = (Human) humans.get(humanIDtemp);
-          if(humantemp.birth > birthRegions[teller]) {
-              regions.add(h);
-              System.out.println("Toegevoegd! In if!");
-          }
-        }
-      }
-      else {
-        regions.add(h);
-        while(teller < 4) {
-          System.out.println("Else Birth: " + human.birth + " Required date: "+ birthRegions[teller]);
-          System.out.println("Toegevoegd! Begin While!");
-
-          teller++;
-          h = new HashMap();
-          if(human.birth < birthRegions[teller])
-          {
-            h.put(human.id, human);
-            System.out.println("Toegevoegd! Break!");
-            System.out.println(h);
-            regions.add(h);
-            break;
-          }
-            System.out.println("Toegevoegd! While loop!");
-           regions.add(h);
-        }
-      }
-                  System.out.println("L: " + (l+1) + " HumanIDs.size: " + humanIDs.size());
-      
-                  if(l+1 == humanIDs.size()) {
-              for(int m = 0 ; m < 4-teller ; m++) {
-                h = new HashMap();
-                regions.add(h);
-              }
-            }
-    }
-    System.out.println(regions.size());
-    for(int z = 0 ; z < regions.size() ; z++) {
-      
-    }
     double spaceBetweenNodes = perimeter / humanIDs.size();
     double angle = 0.0;
     ellipseMode(CENTER);
